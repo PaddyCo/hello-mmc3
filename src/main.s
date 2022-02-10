@@ -1,27 +1,31 @@
-.include "global.inc"
-.exportzp arg0, arg1, argw0, argw1
-.export Main
+.include "ppu.inc"
+.include "init.inc"
+.include "input.inc"
+.include "memory.inc"
+.include "nes.inc"
 
-.segment "ZEROPAGE"
-  arg0: .res 1
-  arg1: .res 1
-  argw0: .res 2
-  argw1: .res 2
+.export Main
 
 .segment "STARTUP"
 Main:
-  inc $203
-  jsr TestProc
+  jsr UpdateJoypads
+  ;; Insert more logic here
 
+  ;; Wait for VBlank to finish
+  jsr WaitForVBlank
+
+  ;; Everything PPU related here:
   .scope SpriteDMA
     lda #$02
     sta OAM_DMA
   .endscope
 
-  jsr WaitForVBlank
+  ;; It's a loop, baby!
   jmp Main
 
 NMI:
+  ;; Stuff that has to run every frame, everything else be damned
+  ;; Good for: Music, probably some other stuff!
   rti
 
 IRQ:

@@ -1,4 +1,9 @@
-.include "global.inc"
+.include "ppu.inc"
+.include "memory.inc"
+.include "main.inc"
+.include "mmc3.inc"
+.include "nes.inc"
+
 .export Reset
 
 .segment "STARTUP"
@@ -21,7 +26,7 @@ Reset:
   inx ; X = #$00
   stx PPUCTRL ; disable NMI
   stx PPUMASK ; disable rendering
-  stx APUDMC ; disable DMC IRQs
+  stx $4010 ; disable DMC IRQs
 
   bit PPUSTATUS ; Clear vblank flag (unknown state after reset)
 
@@ -46,18 +51,18 @@ Reset:
   ; Initialize banks
   .scope InitBanks
     lda #$00
-    sta arg0
+    sta r0
     jsr SetLoBank
 
     lda #$00
-    sta arg0
+    sta r0
     jsr SetHiBank
   .endscope
 
   jsr WaitForVBlank
 
   lda dummyPalette
-  sta argw0
+  sta r0
 
   .scope LoadPalettes
     lda #$3f
@@ -80,26 +85,27 @@ Reset:
   sta PPUADDR
 
   .scope LoadNametable
+    NametablePtr := r0
     lda #$20
     sta PPUADDR
     lda #$00
     sta PPUADDR
 
     lda #<dummyNametable
-    sta argw0
+    sta NametablePtr
     lda #>dummyNametable
-    sta argw0+1
+    sta NametablePtr+1
 
     ldy #$00
     ldx #$00
       loop:
-        lda (argw0), y
+        lda (NametablePtr), y
         sta PPUDATA
         iny
         cpy #$00
         bne loop
       inx
-      inc argw0+1
+      inc NametablePtr+1
       cpx #$04
       bne loop
   .endscope
@@ -108,13 +114,12 @@ Reset:
 
   .scope InitDummySprite
     lda #$20
-    sta $200
-    sta $203
+    sta SHADOW_OAM
+    sta SHADOW_OAM+3
     lda #$11
-    sta $201
+    sta SHADOW_OAM+1
     lda #%00100011
-    sta $202
-
+    sta SHADOW_OAM+2
   .endscope
 
   ; Enable interrupts
@@ -123,6 +128,8 @@ Reset:
   sta PPUCTRL
   lda #%00011110
   sta PPUMASK
+
+  jsr WaitForVBlank
 
   jmp Main
 

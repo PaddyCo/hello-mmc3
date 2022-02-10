@@ -1,5 +1,8 @@
-.include "global.inc"
-.export WaitForVBlank
+.export WaitForVBlank, SHADOW_OAM
+
+.include "nes.inc"
+
+SHADOW_OAM = $200
 
 .segment "STARTUP"
 .proc WaitForVBlank
