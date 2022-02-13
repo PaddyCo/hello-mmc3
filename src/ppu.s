@@ -1,8 +1,9 @@
-.export WaitForVBlank, SHADOW_OAM
+.export WaitForVBlank, shadow_oam
 
 .include "nes.inc"
 
-SHADOW_OAM = $200
+.segment "SHADOW_OAM"
+  shadow_oam: .res $100
 
 .segment "STARTUP"
 .proc WaitForVBlank

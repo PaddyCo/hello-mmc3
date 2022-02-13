@@ -114,12 +114,12 @@ Reset:
 
   .scope InitDummySprite
     lda #$20
-    sta SHADOW_OAM
-    sta SHADOW_OAM+3
+    sta shadow_oam
+    sta shadow_oam+3
     lda #$11
-    sta SHADOW_OAM+1
+    sta shadow_oam+1
     lda #%00100011
-    sta SHADOW_OAM+2
+    sta shadow_oam+2
   .endscope
 
   ; Enable interrupts

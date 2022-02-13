@@ -2,6 +2,6 @@
 _PPU_INC := 1
 
 .import WaitForVBlank
-.import SHADOW_OAM
+.import shadow_oam
 
 .endif

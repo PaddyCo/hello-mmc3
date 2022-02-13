@@ -17,6 +17,7 @@
 .proc UpdateJoypads
   jsr UpdatePressedButtons
   jsr UpdateJustPressedReleased
+  rts
 .endproc
 
 ;; Updates the joypad status for both joypads
